@@ -15,6 +15,8 @@ if __name__ == '__main__':
     # get the script directory
     curdir = os.path.dirname(os.path.abspath(__file__))
 
+    modelfilename = f"{curdir}\\dqn_pong_weights.h5f"
+
     # Construct the argument parser
     parser = argparse.ArgumentParser()
 
@@ -41,7 +43,7 @@ if __name__ == '__main__':
     print(model.summary())
 
     # Keep the previous actions and steps
-    memory = SequentialMemory(limit=100000, window_length=1)
+    memory = SequentialMemory(limit=1000000, window_length=1)
 
     # epsilon-greedy policy
     policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1, value_min=0.05, value_test=.05, nb_steps=20000)
@@ -56,14 +58,14 @@ if __name__ == '__main__':
     # running in train mode
     if args.train:
         # fit the model for 100k steps
-        history=dqn.fit(env, nb_steps=100000, visualize=False, verbose=1, action_repetition=2, log_interval=100000)
+        history=dqn.fit(env, nb_steps=1000000, visualize=False, verbose=1, action_repetition=2, log_interval=100000)
 
         # save the model
-        dqn.save_weights('dqn_pong_weights.h5f', overwrite=True)
+        dqn.save_weights(modelfilename, overwrite=True)
 
     else:
         # load the model
-        dqn.load_weights(filepath='dqn_pong_weights.h5f')
+        dqn.load_weights(filepath=modelfilename)
 
         # play game for 10 rounds
         dqn.test(env, nb_episodes=10, visualize=True)
